@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Number Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000; /* Black background */
+            color: white;
+            text-align: center;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden; /* Prevent overflow during animations */
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            opacity: 0;
+            animation: welcomeAnim 3s forwards; /* Animation for welcome message */
+        }
+
+        @keyframes welcomeAnim {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5); /* Grow */
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0); /* Fade out */
+                opacity: 0;
+            }
+        }
+
+        input[type="text"] {
+            width: 200px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            color: black;
+        }
+
+        input[type="text"].error {
+            color: red;
+            border-color: red;
+        }
+
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+
+        .error-message {
+            color: red;
+            font-size: 18px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Owner Things button and dropdown */
+        .owner-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .owner-button {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .owner-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+
+        .dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: transparent;
+        }
+
+        .dropdown .dropdown-button {
+            width: 100px;
+            padding: 10px 0;
+            font-size: 16px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 5px;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .dropdown .dropdown-button.youtube {
+            background-color: red;
+        }
+
+        .dropdown .dropdown-button.roblox {
+            background-color: gray;
+        }
+
+        .dropdown .dropdown-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+            opacity: 0.8;
+        }
+
+        /* Animation for click effect */
+        .dropdown .dropdown-button:active {
+            transition: transform 0.5s ease;
+            transform: scale(1.1); /* Scale up by 10% on click */
+            z-index: 10; /* Ensure it appears above other elements */
+        }
+
+        /* New button for last online time */
+        .last-online-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .last-online-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+
+        /* Section for last online time */
+        .last-online-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .back-button {
+            background-color: #ff3d3d; /* Red for back button */
+            color: white;
+            padding: 10px 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .back-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+
+        /* New button for showing player's ID */
+        .id-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .id-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+
+        /* Rating section */
+        .rating-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .star {
+            font-size: 50px;
+            color: gray;
+            cursor: pointer;
+            transition: color 0.3s; /* Color transition */
+        }
+
+        .star:hover,
+        .star:hover ~ .star {
+            color: gold; /* Highlight stars on hover */
+        }
+
+        .percentage {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        /* Rate button */
+        .rate-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease; /* Transition for rotation */
+        }
+
+        .rate-button:hover {
+            transform: rotate(20deg); /* Rotate by 20 degrees on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-message" id="welcomeMessage">WELCOME <span id="playerName"></span></div>
+
+    <div class="owner-container">
+        <button class="owner-button" id="ownerButton">Owner Things</button>
+        <div class="dropdown" id="dropdownMenu">
+            <button class="dropdown-button youtube" onclick="openPage('https://www.youtube.com/@Sarkouzy_ouytvao3_Roblox')">YouTube</button>
+            <button class="dropdown-button roblox" onclick="openPage('https://www.roblox.com/users/4136456418/profile')">Roblox</button>
+        </div>
+    </div>
+
+    <button class="last-online-button" id="lastOnlineButton">Last Online</button>
+
+    <h1 id="mainTitle" style="display: none;">Your Number Profile</h1>
+    <input type="text" id="userIdInput" maxlength="10" placeholder="Enter User ID" style="display: none;">
+    <p class="error-message" id="errorMessage" style="display: none;">Invalid ID: Max 10 digits only.</p>
+    <button class="button" id="goButton" style="display: none;">Go</button>
+
+    <div class="last-online-section" id="lastOnlineSection">
+        <h1>Last Online Time</h1>
+        <p id="lastOnlineTime"></p>
+        <button class="back-button" id="backButton">Back</button>
+        <button class="id-button" id="whatMyIdButton">What My ID?</button>
+    </div>
+
+    <div class="rating-section" id="ratingSection">
+        <h1>Rate Us</h1>
+        <div id="starsContainer">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+        </div>
+        <div class="percentage" id="ratingPercentage">0%</div>
+        <button class="back-button" id="ratingBackButton">Back</button>
+    </div>
+
+    <button class="rate-button" id="rateButton">Rate</button>
+
+    <script>
+        const playerName = "Player"; // Set player name
+        document.getElementById('playerName').textContent = playerName; // Set player name in welcome message
+
+        setTimeout(() => {
+            document.getElementById('welcomeMessage').style.display = 'none'; // Hide welcome message
+            document.getElementById('mainTitle').style.display = 'block'; // Show main title
+            document.getElementById('userIdInput').style.display = 'block'; // Show user ID input
+            document.getElementById('goButton').style.display = 'block'; // Show go button
+        }, 4000); // 4 seconds before showing the main interface
+
+        // Owner button functionality
+        const ownerButton = document.getElementById('ownerButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        ownerButton.addEventListener('click', () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Allow only numeric input
+        const userIdInput = document.getElementById('userIdInput');
+        const errorMessage = document.getElementById('errorMessage');
+
+        userIdInput.addEventListener('input', function(event) {
+            this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
+            if (this.value.length > 10) {
+                this.classList.add('error');
+                errorMessage.style.display = 'block';
+            } else {
+                this.classList.remove('error');
+                errorMessage.style.display = 'none';
+            }
+        });
+
+        // Go button functionality
+        const goButton = document.getElementById('goButton');
+        goButton.addEventListener('click', function() {
+            const userId = userIdInput.value;
+            if (userId.length <= 10) {
+                openPage(`https://www.roblox.com/users/${userId}/profile`);
+            }
+        });
+
+        // Last Online button functionality
+        const lastOnlineButton = document.getElementById('lastOnlineButton');
+        const lastOnlineSection = document.getElementById('lastOnlineSection');
+        const lastOnlineTime = document.getElementById('lastOnlineTime');
+
+        lastOnlineButton.addEventListener('click', function() {
+            lastOnlineSection.style.display = 'flex';
+            lastOnlineTime.textContent = `Last Online: 396 Days, 21 Hours, 31 Minutes, 48 Seconds`; // Display specified time
+            document.getElementById('mainTitle').style.display = 'none';
+            userIdInput.style.display = 'none';
+            errorMessage.style.display = 'none';
+            goButton.style.display = 'none';
+        });
+
+        // Back button functionality
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', function() {
+            lastOnlineSection.style.display = 'none';
+            document.getElementById('mainTitle').style.display = 'block';
+            userIdInput.style.display = 'block';
+            errorMessage.style.display = 'block';
+            goButton.style.display = 'block';
+        });
+
+        // What My ID button functionality
+        const whatMyIdButton = document.getElementById('whatMyIdButton');
+        whatMyIdButton.addEventListener('click', function() {
+            alert(`Your ID is: ${playerName}`); // Display player's ID
+        });
+
+        // Rating button functionality
+        const rateButton = document.getElementById('rateButton');
+        const ratingSection = document.getElementById('ratingSection');
+        const stars = document.querySelectorAll('.star');
+        const ratingPercentage = document.getElementById('ratingPercentage');
+
+        rateButton.addEventListener('click', function() {
+            ratingSection.style.display = 'flex'; // Show rating section
+            lastOnlineSection.style.display = 'none'; // Hide last online section
+        });
+
+        // Star click functionality
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-value');
+                const percentage = (rating / 5) * 100; // Calculate percentage
+                ratingPercentage.textContent = `${percentage}%`; // Update percentage display
+                stars.forEach(s => s.style.color = 'gray'); // Reset star colors
+                for (let i = 0; i < rating; i++) {
+                    stars[i].style.color = 'gold'; // Highlight selected stars
+                }
+            });
+        });
+
+        // Back button for rating section
+        const ratingBackButton = document.getElementById('ratingBackButton');
+        ratingBackButton.addEventListener('click', function() {
+            ratingSection.style.display = 'none'; // Hide rating section
+            document.getElementById('mainTitle').style.display = 'block'; // Show main title
+            userIdInput.style.display = 'block'; // Show user ID input
+            goButton.style.display = 'block'; // Show go button
+        });
+
+        function openPage(url) {
+            window.open(url, '_blank'); // Open in a new tab
+        }
+    </script>
+</body>
+</html>
